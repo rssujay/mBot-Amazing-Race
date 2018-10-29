@@ -7,9 +7,9 @@ MeDCMotor leftWheel(M1);
 MeDCMotor rightWheel(M2); 
 
 //Function prototypes for those with default arguments
-void moveForward(short duration = 200);
-void leftTurn(uint8_t turnSpeed = OPSPD, short duration = TDURATION);
-void rightTurn( uint8_t turnSpeed = OPSPD, short duration = TDURATION);
+void moveForward(uint16_t duration = 200);
+void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
+void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 
 void setup()
 {
@@ -35,24 +35,21 @@ void stopWheels(){
   rightWheel.stop();
 }
 
-void moveForward(short duration = 200){
+void moveForward(uint16_t duration = 200){
   leftWheel.run(-OPSPD);
   rightWheel.run(OPSPD);
   delay(duration);
 }
 
-void leftTurn(uint8_t turnSpeed = OPSPD, short duration = TDURATION){
+void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
   leftWheel.run(turnSpeed);
   rightWheel.run(turnSpeed);
   delay(duration);
   stopWheels();
 }
 
-void rightTurn(uint8_t turnSpeed = OPSPD, short duration = TDURATION){ //should this be rewritten as leftTurn with -ve turnSpeed?
-  leftWheel.run(-turnSpeed);
-  rightWheel.run(-turnSpeed);
-  delay(duration);
-  stopWheels();
+void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
+  leftTurn(-turnSpeed);
 }
 
 void uTurn(){ //should this be rewritten in terms of 2x left or right turns with 0 delay?
