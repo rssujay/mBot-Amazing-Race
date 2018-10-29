@@ -1,0 +1,36 @@
+MON 29/10/18 (1600 - 1800)
+{
+	- Discussing how to make the mBot turn
+		>> Move one wheel vs moving both wheels in different direction
+			>> Decided on moving both wheels in different directions
+		>> Both motors are identical
+			>> Motor.speed() values must be opposite signed (-/+) in order for the mBot
+			   to move forward
+				>> Hence to turn, values must be identically signed
+		>> When mBot encounters a black strip, immediately turn and go?
+		>> Double left/right turn?
+			>> When mBot encounters a wall, store value from the ultrasonic sensor in a var
+			>> After turn, and encounter next wall, when value from ultrasonic sensor == var, turn
+				
+	- Error Correction
+		>> 2 sources of error
+			>> Human error from placing the mBot on the ground
+			>> Error from the mBot turning
+		>> What happens if the mBot turns badly (thus having an angle to hit a wall)
+			>> Idea 1: using IR sensor on the side?
+				>> Calculate distance from sides of mBot to the wall
+				>> Using a different threshold, correct angle accordingly
+				>> How to consider for different angles of attack?
+					>> Using math method to calculate the angle of attack?
+						>> Using distance calculated by the IR sensor at t = 0s vs t = 30s
+						>> If distance at t = 30s is less than t = 0s, angle can be determined and corrected
+				>> How to consider when there is no side wall during the turn?
+					>> 2nd Correction
+						>> When a wall is detected on the sides, then correct accordingly
+	
+	/** ACHIEVED TODAY **/
+	>> Made mBot turn 90deg
+	>> Made mBot move forward and backward
+	>> Made mBot spaz around :)
+	>> Wrote skeleton code
+}
