@@ -7,7 +7,6 @@ MeDCMotor leftWheel(M1);
 MeDCMotor rightWheel(M2); 
 
 //Function prototypes for those with default arguments
-void moveForward(uint16_t duration = 200);
 void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 
@@ -16,29 +15,32 @@ void setup()
 }
 
 void loop(){
-  moveForward();
+  stepForward(1000);
   leftTurn();
-  moveForward();
+  stepForward(1000);
   rightTurn();
-  moveForward();
+  stepForward(1000);
   uTurn();
-  moveForward();
   LLTurn();
-  moveForward();
   RRTurn();
   delay(5000);
 }
 
 //General movement functions
-void stopWheels(){
+void stopWheels(void){
   leftWheel.stop();
   rightWheel.stop();
 }
 
-void moveForward(uint16_t duration = 200){
+void moveForward(void){
   leftWheel.run(-OPSPD);
   rightWheel.run(OPSPD);
+}
+
+void stepForward(uint16_t duration){
+  moveForward();
   delay(duration);
+  stopWheels();
 }
 
 void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
@@ -61,14 +63,12 @@ void uTurn(){ //should this be rewritten in terms of 2x left or right turns with
 
 void LLTurn(){
   leftTurn();
-  moveForward(500); //replace with dynamic value from get_duration (from frontal US emitter/detectors)
+  stepForward(500); //replace with dynamic value from get_duration (from frontal US emitter/detectors)
   leftTurn();
 }
 
 void RRTurn(){
   rightTurn();
-  moveForward(500); //replace with dynamic value from get_duration (from frontal US emitter/detectors)
+  stepForward(500); //replace with dynamic value from get_duration (from frontal US emitter/detectors)
   rightTurn();
 }
-
-
