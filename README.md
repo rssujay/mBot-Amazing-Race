@@ -35,3 +35,12 @@ In general:
   - optimize code as much as possible (use 8bit variables vs int, use variables to store reusable data)
   - remove abstraction layers ( only need to include header files that are actually needed for this project)
   - comment non-obvious code
+  
+---
+
+Turning:
+
+Distance between middle of wheels = 116 mm
+Wheel Circumference = 64pi mm
+Distance to be covered by each wheel for 90 deg turn = 29pi mm
+
