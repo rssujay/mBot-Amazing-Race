@@ -1,0 +1,28 @@
+TUES 30/10/18 (1045 - 1200)
+{
+	mBot 'wheelies' upon starting movement
+    >> Build acceleration function (so that it doesn't increase 0 - 250 instantly)
+    
+	
+	Finding the resistance needed for bandpass filter for Ultrasonic sensor (using 1/2piRC)
+		>> 300Hz
+			>> Lower limit - 250Hz - 636 Ohms and 1microFarad capacitor (High pass)
+			>> Upper limit - 350Hz - 454 Ohms and 1microFarad capacitor (Low pass)
+      
+		>> 3000Hz
+			>> Lower limit - 2750Hz - 263 (actual 270) Ohms and 0.22microFarad capacitor (High pass)
+      >> Upper limit - 3250Hz - 222 (actual 2x 110) Ohms and 0.22microFarad capacitor (Low pass)
+      
+  Functions written
+    >> lineDetect() // to detect coloured lines
+    >> General Movement functions
+      >> goForward
+      >> stepForward
+      >> stopWheels
+      >> left/rightTurn
+      >> uTurn
+    
+	/** ACHIEVED TODAY **/
+	>> Figured out the degree of turning to turn exactly 90deg
+	>> Configured bandpass filter
+}  
