@@ -7,7 +7,7 @@ MON 29/10/18 (1600 - 1800)
 		>> Both motors are identical
 			>> Motor.speed() values must be opposite signed (-/+) in order for the mBot
 			   to move forward
-				>> Hence to turn, values must be identically signed
+				>> Hence to turn, values must be identically signed 
         
 		>> When mBot encounters a black strip, immediately turn and go?
     
