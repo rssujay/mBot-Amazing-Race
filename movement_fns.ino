@@ -13,13 +13,12 @@ void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 
 void setup()
 {
-  //start off slower
+  lineFinder.readSensors(); //initializes the starting position 
   moveForward();
 }
 
-void loop(){ 
+void loop(){
   detectChallenge();
-  lineFinder.readSensors();
   delay(1000);
 }
 
@@ -30,12 +29,8 @@ void solveChallenge(void){
 }
 
 //Detector functions
-bool lineDetect(void){
-  int sensorState = lineFinder.readSensors();
-  return (sensorState > 2);
-}
 void detectChallenge(void){ 
-  while(!lineDetect()){
+  while(lineFinder.readSensors() <= 2){
     moveForward();
   }
   stopWheels();
@@ -70,7 +65,7 @@ void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
   leftTurn(-turnSpeed);
 }
 
-void uTurn(void){ //should this be rewritten in terms of 2x left or right turns with 0 delay?
+void uTurn(void){
   leftWheel.run(OPSPD);
   rightWheel.run(OPSPD);
   delay(TDURATION * 2);
