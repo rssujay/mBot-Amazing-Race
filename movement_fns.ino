@@ -14,12 +14,14 @@ void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 void setup()
 {
   lineFinder.readSensors(); //initializes the starting position 
+  delay(500); // temporary fix
   moveForward();
 }
 
 void loop(){
   detectChallenge();
-  delay(1000);
+  lineFinder.readSensors();
+  delay(500); //temporary fix
 }
 
 // Challenge Solver
@@ -30,7 +32,7 @@ void solveChallenge(void){
 
 //Detector functions
 void detectChallenge(void){ 
-  while(lineFinder.readSensors() <= 2){
+  while(lineFinder.readSensors() == 3){
     moveForward();
   }
   stopWheels();
