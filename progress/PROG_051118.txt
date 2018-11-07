@@ -1,0 +1,20 @@
+MON 05/11/18 ()
+{
+  Having trouble with the band pass filter
+    >> not detecting changes in frequency?
+    >> will have to redo the circuit
+  
+  Created function for detecting colour from the colour sensor
+    >> needs 6 different colours
+      >> red, blue, green, orange, white, black
+    >> mainly uses if-else statements (possible to use switch..case?)
+  
+  /** ACHIEVED TODAY **/
+  >> created function for detecting colour
+    >> FUNCTION DESCRIPTION
+      >> shines LED in red, green, blue
+      >> for each colour, obtains colour values
+      >> divides by 1023 and multiplies by 255
+      >> using conditional statements, determines the colours
+      >> returns the values
+}
