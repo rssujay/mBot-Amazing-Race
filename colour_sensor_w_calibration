@@ -84,7 +84,7 @@ void setBalance(float* colour){
  */
 void colourAction(int red, int green, int blue) {
   // scan red
-  rgbled_7.setColor(0,60,0,0);
+  rgbled_7.setColor(0,255,0,0);
   rgbled_7.show();
   delay(1000);
   red = lightsensor_6.read();
@@ -92,7 +92,7 @@ void colourAction(int red, int green, int blue) {
   Serial.println(" : RED VALUE");
 
   // scan green
-  rgbled_7.setColor(0,0,60,0);
+  rgbled_7.setColor(0,0,255,0);
   rgbled_7.show();
   delay(1000);
   green = lightsensor_6.read();
@@ -100,7 +100,7 @@ void colourAction(int red, int green, int blue) {
   Serial.println(" : GREEN VALUE");
   
   // scan blue
-  rgbled_7.setColor(0,0,0,60);
+  rgbled_7.setColor(0,0,0,255);
   rgbled_7.show();
   delay(1000);
   blue = lightsensor_6.read();
