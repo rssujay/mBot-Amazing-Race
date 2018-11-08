@@ -1,0 +1,121 @@
+#include <Arduino.h>
+#include <Wire.h>
+#include <SoftwareSerial.h>
+#include <MeMCore.h>    
+#define RGBWait 200
+#define LDRWait 10
+
+float red;
+float green;
+float blue;
+MeRGBLed rgbled_7(7, 7==7?2:4);
+MeLightSensor lightsensor_6(6);
+
+//floats to hold colour arrays
+float colourArray[] = {0,0,0};
+float whiteArray[] = {184,152,172};
+float blackArray[] = {55,44,50};
+float greyDiff[] = {0,0,0};
+char colourStr[3][5] = {"R = ", "G = ", "B = "};
+
+void colourAction(float,float,float);
+float getAvgReading(int);
+//void setBalance(float*);
+
+void setup(){
+  Serial.begin(9600);
+  delay(100);
+  for (int i = 0; i <= 2; i += 1) {
+    greyDiff[i] = whiteArray[i] - blackArray[i];
+  }
+}
+
+void loop(){
+  colourAction(red, green, blue);
+}
+
+float getAvgReading(int times){      
+//find the average reading for the requested number of times of scanning LDR
+  float reading;
+  float total = 0;
+//take the reading as many times as requested and add them up
+  for(int i = 0;i < times;i++){
+     reading = lightsensor_6.read();
+     total = reading + total;
+     delay(LDRWait);
+  }
+//calculate the average and return it
+  return total/times;
+}
+
+/**
+ * What to do when colour sensor detects a colour
+ * Detects RGB values and does challenge
+ */
+void colourAction(float red, float green, float blue) {
+  for (int c = 0; c <= 2; c += 1) {
+    Serial.print(colourStr[c]);
+    rgbled_7.show();
+    delay(RGBWait);
+    colourArray[c] = getAvgReading(5);
+    colourArray[c] = (colourArray[c] - blackArray[c])/(greyDiff[c])*255;
+    delay(RGBWait);
+    Serial.println((colourArray[c]));
+    delay(RGBWait);
+  }
+  red = colourArray[0];
+  green = colourArray[1];
+  blue = colourArray[2];
+
+  if (red > 140 && green > 165 && blue > 165) {
+    Serial.println(" WHITE");
+//      uTurn();
+  } else if (red < 90 && green < 115 && blue < 115) {
+    Serial.println(" BLACK");
+//      stopWheels();
+  } else if (blue > red && blue > green) {
+      Serial.println(" BLUE");
+//      RRTurn();
+  } else if (green > red && green > blue) {
+    Serial.println(" GREEN");
+//      rightTurn();
+  } else if (red > blue && red < green) {
+    Serial.println(" RED");
+//      leftTurn();
+  } else if (red + blue > red + green) {
+    Serial.println(" ORANGE");
+//      LLTurn();
+  }
+}
+/*
+void setBalance(float* colour){
+//go through one colour at a time, set the maximum reading for each colour -- red, green and blue to the white array
+//shine red
+   rgbled_7.setColor(0,255,0,0);
+   rgbled_7.show();
+   Serial.println("Put Sample For Calibration ...");
+   delay(RGBWait);
+   colour[0] = getAvgReading(5);
+   rgbled_7.setColor(0,0,0,0); 
+   rgbled_7.show();
+   delay(RGBWait);
+   
+   //shine green
+   rgbled_7.setColor(0,0,255,0);
+   rgbled_7.show();
+   delay(RGBWait);
+   colour[1] = getAvgReading(5);
+   rgbled_7.setColor(0,0,0,0); 
+   rgbled_7.show();
+   delay(RGBWait);
+   
+   //shine blue
+   rgbled_7.setColor(0,0,0,255);
+   rgbled_7.show();
+   delay(RGBWait);
+   colour[2] = getAvgReading(5);
+   rgbled_7.setColor(0,0,0,0); 
+   rgbled_7.show();
+   delay(RGBWait); 
+}
+*/
