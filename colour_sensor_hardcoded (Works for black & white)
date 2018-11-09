@@ -13,7 +13,7 @@ MeLightSensor lightsensor_6(6);
 
 //floats to hold colour arrays
 float colourArray[] = {0,0,0};
-float whiteArray[] = {184,152,172};
+float whiteArray[] = {184,172,172};
 float blackArray[] = {55,44,50};
 float greyDiff[] = {0,0,0};
 char colourStr[3][5] = {"R = ", "G = ", "B = "};
@@ -57,7 +57,7 @@ void colourAction(float red, float green, float blue) {
     Serial.print(colourStr[c]);
     rgbled_7.show();
     delay(RGBWait);
-    colourArray[c] = getAvgReading(5);
+    colourArray[c] = getAvgReading(10);
     colourArray[c] = (colourArray[c] - blackArray[c])/(greyDiff[c])*255;
     delay(RGBWait);
     Serial.println((colourArray[c]));
@@ -70,21 +70,21 @@ void colourAction(float red, float green, float blue) {
   if (red > 140 && green > 165 && blue > 165) {
     Serial.println(" WHITE");
 //      uTurn();
+  } else if (blue > green && green > red) {
+      Serial.println(" BLUE");
+//      RRTurn();
+  } else if (green > red && red > blue) {
+    Serial.println(" GREEN");
+//      rightTurn();
+  } else if (red > green && green > blue) {
+    Serial.println(" RED");
+//      leftTurn();
+  } else if (red + green > red + blue) {
+    Serial.println(" ORANGE");
+//      LLTurn();
   } else if (red < 90 && green < 115 && blue < 115) {
     Serial.println(" BLACK");
 //      stopWheels();
-  } else if (blue > red && blue > green) {
-      Serial.println(" BLUE");
-//      RRTurn();
-  } else if (green > red && green > blue) {
-    Serial.println(" GREEN");
-//      rightTurn();
-  } else if (red > blue && red < green) {
-    Serial.println(" RED");
-//      leftTurn();
-  } else if (red + blue > red + green) {
-    Serial.println(" ORANGE");
-//      LLTurn();
   }
 }
 /*
