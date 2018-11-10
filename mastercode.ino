@@ -4,49 +4,40 @@
 #define TDURATION 340 // Standard time taken for 90 degree turn
 
 //Global variables
-MeDCMotor leftWheel(M1);
+MeDCMotor leftWheel(M1); // MOVEMENT
 MeDCMotor rightWheel(M2);
 MeLineFollower lineFinder(PORT_2);
-MeRGBLed rgbled_7(7);
-MeLightSensor lightsensor_6(6);
-int LIR = A2, RIR = A3;
-float left, right;
 
-int red_value;
-int blue_value;
-int green_value;
+MeRGBLed rgbled_7(7);  // COLOUR
+MeLightSensor lightsensor_6(6);
+int red_value, blue_value, green_value;
+
+int LIR = A2, RIR = A3; // IR
 
 //Function prototypes for those with default arguments
 void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 
 void setup(){
-  lineFinder.readSensors(); //initializes the starting position 
+  lineFinder.readSensors(); 
   Serial.begin(9600);
   pinMode(LIR, INPUT);
   pinMode(RIR, INPUT);
   delay(300);
-  //stepForward(300);
+  stepForward(300);
 }
 
 void loop(){
+  if(lineFinder.readSensors() != 3){
+    stopWheels();
+    solveChallenge();
+  }
   moveForward();
-  //detectChallenge();
 }
 
 // Challenge Solver
 void solveChallenge(void){
   colourAction(red_value, green_value, blue_value);
-  //stepForward(200);
-}
-
-//Detector functions
-void detectChallenge(void){ 
-  while(lineFinder.readSensors() == 3){
-    //moveForward();
-  }
-  stopWheels();
-  solveChallenge();
 }
 
 //General movement functions
@@ -56,24 +47,19 @@ void stopWheels(void){
 }
 
 void moveForward(void){
-  left = analogRead(LIR)/51.0;
-  right = analogRead(RIR)/51.0;
-  Serial.print("LEFT ");
-  Serial.println(left);
-  Serial.println(right);
-  if (right < 13.75){
-    //leftWheel.run(-LOSPD);
-    //rightWheel.run(OPSPD);
-    delay(500);
+  int left = analogRead(LIR)/51.0, right = analogRead(RIR)/51.0;
+  if (abs(left - right) < 3.0){
+    leftWheel.run(-OPSPD);
+    rightWheel.run(OPSPD);
   }
-  else if (left < 10){
-    //leftWheel.run(-OPSPD);
-    //rightWheel.run(LOSPD);
-    delay(500);
+  else if (right < 13.5){
+    leftWheel.run(-LOSPD);
+    rightWheel.run(OPSPD);
   }
-  delay(500);
-  //leftWheel.run(-OPSPD);
-  //rightWheel.run(OPSPD);
+  else if (left < 13.5){
+    leftWheel.run(-OPSPD);
+    rightWheel.run(LOSPD);
+  }
 }
 
 void stepForward(uint16_t duration){
@@ -103,13 +89,13 @@ void uTurn(void){
 
 void LLTurn(void){
   leftTurn();
-  stepForward(500); //replace with dynamic value from get_duration (from frontal US emitter/detectors)
+  stepForward(500); //replace with dynamic value from get_duration (from frontal US emitter/detectors)?
   leftTurn();
 }
 
 void RRTurn(void){
   rightTurn();
-  stepForward(500); //replace with dynamic value from get_duration (from frontal US emitter/detectors)
+  stepForward(500);
   rightTurn();
 }
 
