@@ -1,14 +1,19 @@
 #include <math.h>
 #define SND_THSHOLD 100
+#define SOUND_LOW A0
+#define SOUND_HIGH A1
 
 void setup() {
-  pinMode(A0, INPUT);   // 300Hz
-  pinMode(A1, OUTPUT);  // 3000Hz
+  pinMode(SOUND_LOW, INPUT);   // 300Hz
+  pinMode(SOUND_HIGH, OUTPUT);  // 3000Hz
 }
 
+/**
+ * SOUND CHALLENGE SOLVER
+ */
 void soundSense() {
-  int fA = analogRead(A0);  // 300Hz
-  int fB = analogRead(A1);  // 3000Hz
+  int fA = analogRead(SOUND_LOW);  // 300Hz
+  int fB = analogRead(SOUND_HIGH);  // 3000Hz
 
   if (abs(fA - fB) < SND_THSHOLD) {
     // {fA & fB same loudness)
