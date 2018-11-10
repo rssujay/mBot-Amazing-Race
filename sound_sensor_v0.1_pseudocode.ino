@@ -1,9 +1,10 @@
 // pseudocode
-void setup()
+void setup() {
   pinMode(pin1, input)
   pinMode(pin2, input)
+}
 
-void loop()
+void loop() {
   fa = analogRead(pin1) // (fa is 300hz)
   fb = analogRead(pin2) // (fb is 3000hz)
 
@@ -16,3 +17,4 @@ void loop()
   else if abs(fa - fb) < 100
     // fa is louder than fb
     uturn
+}
