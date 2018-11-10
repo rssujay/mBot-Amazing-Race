@@ -155,7 +155,7 @@ void colourAction(int red, int green, int blue, int white) {
     Serial.println(" GREEN");
       rightTurn();
   } else if (white < 180) { // one side blocked
-    if (red + 20 < 560) {
+    if (red + 25 < 565) {
       Serial.println(" RED");
       leftTurn();
     } else {
