@@ -48,17 +48,18 @@ void stopWheels(void){
 
 void moveForward(void){
   int left = analogRead(LIR)/51.0, right = analogRead(RIR)/51.0;
-  if (abs(left - right) < 3.0){
-    leftWheel.run(-OPSPD);
-    rightWheel.run(OPSPD);
-  }
-  else if (right < 13.5){
+ 
+  if (left - right > 3.0){
     leftWheel.run(-LOSPD);
     rightWheel.run(OPSPD);
   }
-  else if (left < 13.5){
+  else if (right - left > 3.0){
     leftWheel.run(-OPSPD);
     rightWheel.run(LOSPD);
+  }
+  else{
+    leftWheel.run(-OPSPD);
+    rightWheel.run(OPSPD);
   }
 }
 
@@ -77,7 +78,7 @@ void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
 }
 
 void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
-  leftTurn(-turnSpeed);
+  leftTurn(-turnSpeed, duration);
 }
 
 void uTurn(void){
