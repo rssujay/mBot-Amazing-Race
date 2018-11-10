@@ -10,9 +10,9 @@ MeLineFollower lineFinder(PORT_2);
 
 MeRGBLed rgbled_7(7);  // COLOUR
 MeLightSensor lightsensor_6(6);
-int red_value, blue_value, green_value;
+int16_t red_value, blue_value, green_value;
 
-int LIR = A2, RIR = A3; // IR
+const int8_t LIR = A2, RIR = A3; // IR
 
 //Function prototypes for those with default arguments
 void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
@@ -47,7 +47,7 @@ void stopWheels(void){
 }
 
 void moveForward(void){
-  int left = analogRead(LIR)/51.0, right = analogRead(RIR)/51.0;
+  float left = analogRead(LIR)/51.0, right = analogRead(RIR)/51.0; // divide by 255*5? -- why?
  
   if (left - right > 3.0){
     leftWheel.run(-LOSPD);
