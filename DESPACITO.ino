@@ -1,26 +1,3 @@
-/**
- * \par Copyright (C), 2012-2016, MakeBlock
- * @file    MbotBuzzerTest.ino
- * @author  MakeBlock
- * @version V1.0.0
- * @date    2015/11/19
- * @brief   Description: this file is sample code for buzzer
- *
- * Function List:
- * 1. void buzzerOn()
- * 2. void buzzerOff()
- *
- * \par History:
- * <pre>
- * `<Author>`         `<Time>`        `<Version>`        `<Descr>`
- * forfish             2015/11/19    1.0.0          add some descriptions
- * </pre>
- */
-
-/*************************************************
- * Public Constants
- *************************************************/
-
 #define NOTE_B0  31
 #define NOTE_C1  33
 #define NOTE_CS1 35
@@ -135,65 +112,54 @@ NOTE_B3,
 NOTE_B3,
 NOTE_B3,
 NOTE_A3,
-NOTE_B3,
-NOTE_B3,
+NOTE_B3,//15
+NOTE_G3,
 NOTE_G3,
 NOTE_G3,//18
 NOTE_G3,
 NOTE_G3,
-NOTE_G3,
+NOTE_B3, 
 NOTE_B3,
 NOTE_B3,//23
 NOTE_B3,
 NOTE_B3,
 NOTE_CS4,
-NOTE_D4,//28
+NOTE_D4,//27
+NOTE_A3,
+NOTE_A3, 
+NOTE_A3,
+NOTE_A3,
+NOTE_A3,//32
+NOTE_A3,
 NOTE_D4,
-NOTE_A3,
-NOTE_A3,
-NOTE_A3,
-NOTE_A3,//33
-NOTE_A3,
-NOTE_A3,
 NOTE_D4,
-NOTE_D4,
-NOTE_D4,//38
+NOTE_D4,//36
 NOTE_D4,
 NOTE_E4,
-NOTE_E4,//41
+NOTE_E4,//39
 NOTE_CS4
 };
 
 int noteDurations[] = {
-//  16,16,8,8,
-//  4,4,4,4,4,
-//  4,4,4,8,
-//  4,8,12,
-//  4,4,4,4,4,
-//  4,4,4,4,8,
-//  4,8,12,
-//  4,4,4,4,4,
-//  4,4,4,8,4,8,12
-
-  2,2,4,4,
-  8,8,8,8,8,
-  8,8,8,4,
-  8,4,3,
-  8,8,8,8,8,
-  8,8,8,8,4,
-  8,4,3,
-  8,8,8,8,
-  8,8,8,4,8,4,3
+  2,2,4,4,//4
+  8,8,8,8,8,//9
+  8,8,8,4,//13
+  8,4,3,//16
+  8,8,8,8,8,//21
+  8,8,8,4,//25
+  8,4,3,//28
+  8,8,8,8,//33
+  8,8,8,8,4,8,4,3//40
 };
 
 void play()
 {
-    for (int thisNote = 0; thisNote <= 40; thisNote++) {
+    for (int thisNote = 0; thisNote <= 41; thisNote++) {
 
     // to calculate the note duration, take one second 
     // divided by the note type.
     //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-    int noteDuration = 1000/noteDurations[thisNote];
+    int noteDuration = 1100/noteDurations[thisNote];
     tone(8, melody[thisNote],noteDuration);
 
     // to distinguish the notes, set a minimum time between them.
