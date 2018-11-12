@@ -9,27 +9,36 @@ void setup() {
   pinMode(SOUND_HI, INPUT);
 }
 
+void loop() {
+  soundSense();
+}
+
 /**
  * SOUND CHALLENGE SOLVER
  */
 void soundSense() {
   int fA = analogRead(SOUND_LW);
-  int fB = analogRead(SOUND_HI);
-
-  // print fA and fB
   Serial.print("fA: ");
   Serial.println(fA);
+  delay(500);
+
+  int fB = analogRead(SOUND_HI);  
   Serial.print("fB: ");
   Serial.println(fB);
+  delay(500);
 
   if (abs(fA - fB) < SND_THSHOLD) {
     // {fA & fB same loudness}
-    leftTurn();
+    Serial.println("RESULT: same loudness");
+//    leftTurn();
   } else if (fB > fA) {
     // {fB is louder}
-    rightTurn();
+    Serial.println("RESULT: 3kHz louder than 300Hz");
+//    rightTurn();
   } else if (fA > fB) {
     // {fA is louder}
-    uTurn();
+    Serial.println("RESULT: 300Hz louder than 3kHz");
+//    uTurn();
   }
+  delay(500);
 }
