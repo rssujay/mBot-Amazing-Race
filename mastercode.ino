@@ -1,30 +1,35 @@
 #include "MeMCore.h"
-#define OPSPD 225 // Operating Speed
-#define LOSPD 185 // Low Speed
-#define TDURATION 340 // Standard time taken for 90 degree turn
+#define OPSPD 245 // Operating Speed
+#define LOSPD 200 // Low Speed
+#define TDURATION 290 // Standard time taken for 90 degree turn
+
 
 //Global variables
+
 MeDCMotor leftWheel(M1); // MOVEMENT
 MeDCMotor rightWheel(M2);
 MeLineFollower lineFinder(PORT_2);
+MePort IR(PORT_3);
 
 MeRGBLed rgbled_7(7);  // COLOUR
 MeLightSensor lightsensor_6(6);
-int16_t red_value, blue_value, green_value;
+double red, blue, green,white;
 
-const int8_t LIR = A2, RIR = A3; // IR
+int8_t LIR, RIR; // IR
+float leftBound, rightBound;
 
 //Function prototypes for those with default arguments
 void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 
 void setup(){
-  lineFinder.readSensors(); 
+  leftBound = IR.aRead1()/51.0 - 1.25, rightBound = IR.aRead2()/51.0 - 1.25;
   Serial.begin(9600);
   pinMode(LIR, INPUT);
   pinMode(RIR, INPUT);
   delay(300);
-  stepForward(300);
+  stepForward(50);
+  lineFinder.readSensors(); 
 }
 
 void loop(){
@@ -37,7 +42,7 @@ void loop(){
 
 // Challenge Solver
 void solveChallenge(void){
-  colourAction(red_value, green_value, blue_value);
+  colourAction();
 }
 
 //General movement functions
@@ -45,15 +50,20 @@ void stopWheels(void){
   leftWheel.stop();
   rightWheel.stop();
 }
-
+  
 void moveForward(void){
-  float left = analogRead(LIR)/51.0, right = analogRead(RIR)/51.0; // divide by 255*5? -- why?
- 
-  if (left - right > 3.0){
+  float left = IR.aRead1()/51.0, right = IR.aRead2()/51.0; // divide by 255*5? -- why?
+  Serial.print(left);
+  Serial.print(", ");
+  Serial.print(right);
+  Serial.print("\n");
+
+  if (right < rightBound){
     leftWheel.run(-LOSPD);
     rightWheel.run(OPSPD);
+
   }
-  else if (right - left > 3.0){
+  else if (left < leftBound){
     leftWheel.run(-OPSPD);
     rightWheel.run(LOSPD);
   }
@@ -90,59 +100,79 @@ void uTurn(void){
 
 void LLTurn(void){
   leftTurn();
-  stepForward(500); //replace with dynamic value from get_duration (from frontal US emitter/detectors)?
+  stepForward(700); //replace with dynamic value from get_duration (from frontal US emitter/detectors)?
   leftTurn();
 }
 
 void RRTurn(void){
   rightTurn();
-  stepForward(500);
+  stepForward(700);
   rightTurn();
 }
 
-void colourAction(int red, int green, int blue) {
+void colourAction() {
+  // scan
+  rgbled_7.setColor(0,0,0,0);
+  rgbled_7.show();
+  delay(1000);
+  white = lightsensor_6.read();
+  Serial.print(white);
+  Serial.println(" : WHITE VALUE");
+  
   // scan red
-  rgbled_7.setColor(0,60,0,0);
+  rgbled_7.setColor(0,255,0,0);
   rgbled_7.show();
   delay(1000);
   red = lightsensor_6.read();
-//  Serial.print(red);
-//  Serial.println(" : RED VALUE");
+  Serial.print(red);
+  Serial.println(" : RED VALUE");
 
   // scan green
-  rgbled_7.setColor(0,0,60,0);
+  rgbled_7.setColor(0,0,255,0);
   rgbled_7.show();
   delay(1000);
   green = lightsensor_6.read();
-// Serial.print(green);
-// Serial.println(" : GREEN VALUE");
+  Serial.print(green);
+  Serial.println(" : GREEN VALUE");
   
   // scan blue
-  rgbled_7.setColor(0,0,0,60);
+  rgbled_7.setColor(0,0,0,255);
   rgbled_7.show();
   delay(1000);
   blue = lightsensor_6.read();
-//  Serial.print(blue);
-//  Serial.println(" : BLUE VALUE");
+  Serial.print(blue);
+  Serial.println(" : BLUE VALUE");
 
 //  Serial.print("THIS IS");
-  if (red > 350 && red < 450 && green > 250 && green < 350 && blue > 250 && blue < 350) {
-//    Serial.println(" ORANGE");
-      LLTurn();
-  } else if (red > 350 && red < 450 && green > 350 && green < 450 && blue > 350 && blue < 450) {
-//    Serial.println(" WHITE");
-      uTurn();
-  } else if (blue < 200 && green < 200 && blue < 200) {
-//    Serial.println(" BLACK");
-      stopWheels();
-  } else if (red > blue && red > green) {
-//    Serial.println(" RED");
-      leftTurn();
-  } else if (blue > red && blue > green) {
-//    Serial.println(" BLUE");
-      RRTurn();
-  } else if (green > red && green > blue) {
-//    Serial.println(" GREEN");
+  if (red > 500 && green > 500 && blue > 500) {
+    Serial.println(" WHITE");
+     uTurn();
+  } else if (red < 200 && green < 200 && blue < 200) {
+    Serial.println(" BLACK");
+     stopWheels();
+     //play_music();
+     delay(300);
+  } else if (blue > red - 50 && blue > green) {
+      Serial.println(" BLUE");
+     RRTurn();
+  } else if (green > red - 50 && green > blue) {
+    Serial.println(" GREEN");
       rightTurn();
+  } else if (white < 180) { // one side blocked
+    if (red + 20 < 560) {
+      Serial.println(" RED");
+      leftTurn();
+    } else {
+    Serial.println(" ORANGE");
+      LLTurn();
+    }
+  } else { // both sides clear (white > 180)
+    if (red < 565) {
+      Serial.println(" RED");
+      leftTurn();
+    } else {
+      Serial.println(" ORANGE");
+      LLTurn(); 
+    }
   }
 }
