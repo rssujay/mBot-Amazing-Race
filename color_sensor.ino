@@ -64,7 +64,7 @@ void colourAction(int red, int green, int blue, int white) {
   Serial.println(" : BLUE VALUE");
 
 //  Serial.print("THIS IS");
-  if (red > 700 && green > 700 && blue > 700) {
+  if (red > 500 && green > 500 && blue > 500) {
     Serial.println(" WHITE");
 //      uTurn();
   } else if (red < 200 && green < 200 && blue < 200) {
