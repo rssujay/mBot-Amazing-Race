@@ -1,22 +1,29 @@
 #include <math.h>
 #define SND_THSHOLD 100
-#define SOUND_LOW A0
-#define SOUND_HIGH A1
+#define SOUND_LW A0 // A0 && A1 are the pins assoicated with the microphone
+#define SOUND_HI A1 // use a different pin later
 
 void setup() {
-  pinMode(SOUND_LOW, INPUT);   // 300Hz
-  pinMode(SOUND_HIGH, OUTPUT);  // 3000Hz
+  Serial.begin(9600);
+  pinMode(SOUND_LW, INPUT);
+  pinMode(SOUND_HI, INPUT);
 }
 
 /**
  * SOUND CHALLENGE SOLVER
  */
 void soundSense() {
-  int fA = analogRead(SOUND_LOW);  // 300Hz
-  int fB = analogRead(SOUND_HIGH);  // 3000Hz
+  int fA = analogRead(SOUND_LW);
+  int fB = analogRead(SOUND_HI);
+
+  // print fA and fB
+  Serial.print("fA: ");
+  Serial.println(fA);
+  Serial.print("fB: ");
+  Serial.println(fB);
 
   if (abs(fA - fB) < SND_THSHOLD) {
-    // {fA & fB same loudness)
+    // {fA & fB same loudness}
     leftTurn();
   } else if (fB > fA) {
     // {fB is louder}
@@ -25,25 +32,4 @@ void soundSense() {
     // {fA is louder}
     uTurn();
   }
-}
-
-// pseudocode
-//void setup() {
-//  pinMode(pin1, input)
-//  pinMode(pin2, input)//
-//}
-//
-//void loop() {
-//  fa = analogRead(pin1) // (fa is 300hz)
-//  fb = analogRead(pin2) // (fb is 3000hz)
-//
-//if abs(fa - fb) > threshold // threshold is variance of loudness between fa and fb
-//    // same loudness
-//    left turn
-//  else if abs(fb - fa) > 100
-//    // fb is louder than fa
-//    right turn  
-//  else if abs(fa - fb) < 100
-//    // fa is louder than fb
-//   uturn
 }
