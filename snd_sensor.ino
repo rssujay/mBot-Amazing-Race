@@ -1,7 +1,7 @@
 #include <math.h>
-#define SND_THSHOLD 100
-#define SOUND_LW A0 // A0 && A1 are the pins assoicated with the microphone
-#define SOUND_HI A1 // use a different pin later
+#define SOUND_LW A0 // A0 && A1 are the pins associated with the microphone
+#define SOUND_HI A1 // if not A0 and A1, just use a different pin
+#define 
 
 void setup() {
   Serial.begin(9600);
@@ -17,28 +17,22 @@ void loop() {
  * SOUND CHALLENGE SOLVER
  */
 void soundSense() {
-  int fA = analogRead(SOUND_LW);
-  Serial.print("fA: ");
-  Serial.println(fA);
-  delay(500);
+  int fL = analogRead(SOUND_LW);
+  int fH = analogRead(SOUND_HI);
+  Serial.print("fL: ");
+  Serial.println(fL);
+  Serial.print("fH: ");
+  Serial.println(fH);
+  delay(1000);
 
-  int fB = analogRead(SOUND_HI);  
-  Serial.print("fB: ");
-  Serial.println(fB);
-  delay(500);
-
-  if (abs(fA - fB) < SND_THSHOLD) {
-    // {fA & fB same loudness}
-    Serial.println("RESULT: same loudness");
-//    leftTurn();
-  } else if (fB > fA) {
-    // {fB is louder}
-    Serial.println("RESULT: 3kHz louder than 300Hz");
-//    rightTurn();
-  } else if (fA > fB) {
-    // {fA is louder}
-    Serial.println("RESULT: 300Hz louder than 3kHz");
-//    uTurn();
-  }
-  delay(500);
+  int r = fL / fH;
+  if (r > 1.25)
+    // {300Hz > 3kHz)
+    Serial.println("/-- FL IS LOUDER --/");
+  if (r < 0.75)
+    // {3kHz > 300Hz}
+    Serial.println("/-- FH IS LOUDER --/");
+  if (r > 0.75 || r < 1.25)
+    // {3kHz same as 300Hz}
+    Serial.println("/-- SAME LOUDNESS --/");
 }
