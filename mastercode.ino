@@ -5,46 +5,49 @@
 
 
 //Global variables
+bool noAction = false; //META
+
 MeDCMotor leftWheel(M1); // MOVEMENT
 MeDCMotor rightWheel(M2);
 MeLineFollower lineFinder(PORT_2);
 MePort IR(PORT_3);
-int8_t ULTRASONIC = 12;
-int8_t LIR, RIR; // IR
-float leftBound, rightBound;
-int a=0,b=0;
+int8_t LIR, RIR, a = 0, b = 0, us = 12; // IR + ULTRASONIC
+float leftBound, rightBound; //IR WALL DETECTION
 
+MePort SND(PORT_4); // SOUND
 
 MeRGBLed rgbled_7(7);  // COLOUR
 MeLightSensor lightsensor_6(6);
-double red, blue, green,white;
+double red, blue, green, white;
 
 //Function prototypes for those with default arguments
 void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 
 void setup(){
-  leftBound = IR.aRead1()/51.0 - 1.0, rightBound = IR.aRead2()/51.0 - 1.0;
-  Serial.begin(9600);
+  leftBound = IR.aRead1()/51.0 - 1.0, rightBound = IR.aRead2()/51.0 - 1.0; //CALIBRATE BOUNDS
   pinMode(LIR, INPUT);
   pinMode(RIR, INPUT);
-  delay(300);
-  stepForward(50);
-  lineFinder.readSensors(); 
+  //delay(300);
+  stepForward(50); //START MOVING
+  lineFinder.readSensors(); //CALIBRATE SENSORS
 }
 
 void loop(){
   if(lineFinder.readSensors() != 3){
     stopWheels();
     solveChallenge();
-}
-  Serial.println(ultraSound());
+  }
   moveForward();
 }
 
 // Challenge Solver
 void solveChallenge(void){
-  colourAction();
+  soundSense();
+  if (noAction){
+    colourAction();
+    noAction = false;
+  } 
 }
 
 //General movement functions
@@ -54,40 +57,39 @@ void stopWheels(void){
 }
 
 int16_t ultraSound(void){
-  pinMode(ULTRASONIC, OUTPUT);
-  digitalWrite(ULTRASONIC, LOW);
+  pinMode(us, OUTPUT);
+  digitalWrite(us, LOW);
   delayMicroseconds(2);
-  digitalWrite(ULTRASONIC, HIGH);
+  digitalWrite(us, HIGH);
   delayMicroseconds(2);
-  digitalWrite(ULTRASONIC, LOW);
-  pinMode(ULTRASONIC, INPUT);
-  return pulseIn(ULTRASONIC, HIGH);
+  digitalWrite(us, LOW);
+  pinMode(us, INPUT);
+  return pulseIn(us, HIGH);
 }
   
 void moveForward(void){
-  float left = IR.aRead1()/51.0, right = IR.aRead2()/51.0; // divide by 255*5? -- why?
-  if (right < rightBound){ //crr to left
-    b=0;
+  float left = IR.aRead1()/51.0, right = IR.aRead2()/51.0;
+  if (right < rightBound){ //correct towards left
+    b = 0;
     leftWheel.run(-LOSPD);
     rightWheel.run(OPSPD);
     a++;
   }
-  else if (left < leftBound){ //crr to right
-    a=0;
+  else if (left < leftBound){ //correct towards right
+    a = 0;
     leftWheel.run(-OPSPD);
     rightWheel.run(LOSPD);
     b++;
   }
-  else if (a>100){
+  else if (a > 100){ //repay correction debt
     leftWheel.run(-OPSPD);
     rightWheel.run(LOSPD);
   }
-  else if (b>100){
+  else if (b > 100){ //repay correction debt
     leftWheel.run(-LOSPD);
     rightWheel.run(OPSPD);
   }
-  else{
-    
+  else{    
     leftWheel.run(-OPSPD);
     rightWheel.run(OPSPD);
   }
@@ -106,7 +108,7 @@ void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
   delay(duration);
   stopWheels();
   long dist = ultraSound();
-  while (dist > 2000 && dist < 4200){
+  while (dist > 2000 && dist < 4200){ //distance approx > 1 tile and approx < 2 tiles - ignored when mBot is straight
     leftWheel.run(-OPSPD + 50);
     rightWheel.run(-LOSPD + 50);
     dist = ultraSound();
@@ -136,7 +138,7 @@ void uTurn(void){
 void LLTurn(void){
   leftTurn();
   long time = millis();
-  while(ultraSound() > 400 || millis()-time < 800){
+  while(ultraSound() > 400 || millis()-time < 800){ //within 900 ms it will cover 1 tile distance
     stepForward(100);
   }
   leftTurn();
@@ -151,69 +153,59 @@ void RRTurn(void){
   rightTurn();
 }
 
-void colourAction() {
-  // scan
-  rgbled_7.setColor(0,0,0,0);
-  rgbled_7.show();
-  delay(300);
-  white = lightsensor_6.read();
-  Serial.print(white);
-  Serial.println(" : WHITE VALUE");
-  
+// Colour based decisionmaking
+void colourAction() {  
   // scan red
   rgbled_7.setColor(0,255,0,0);
   rgbled_7.show();
   delay(300);
   red = lightsensor_6.read();
-  Serial.print(red);
-  Serial.println(" : RED VALUE");
 
   // scan green
   rgbled_7.setColor(0,0,255,0);
   rgbled_7.show();
   delay(300);
   green = lightsensor_6.read();
-  Serial.print(green);
-  Serial.println(" : GREEN VALUE");
   
   // scan blue
   rgbled_7.setColor(0,0,0,255);
   rgbled_7.show();
   delay(300);
   blue = lightsensor_6.read();
-  Serial.print(blue);
-  Serial.println(" : BLUE VALUE");
-
-//  Serial.print("THIS IS");
-  if (red > 500 && green > 500 && blue > 500) {
-    Serial.println(" WHITE");
+  if (red > 500 && green > 500 && blue > 500) { // WHITE
      uTurn();
-  } else if (red < 350 && green < 350 && blue < 350) {
-    Serial.println(" BLACK");
-     stopWheels();
-     //play_music();
-     delay(300);
-  } else if (blue > red - 50 && blue > green) {
-      Serial.println(" BLUE");
+  } 
+  else if (red < 350 && green < 350 && blue < 350) { //BLACK
+      //play_music();
+      exit(0);
+  } 
+  else if (blue > red - 50 && blue > green) { //BLUE
      RRTurn();
-  } else if (green > red - 50 && green > blue) {
-    Serial.println(" GREEN");
-      rightTurn();
-//  } else if (white < 180) { // one side blocked
-//    if (red + 20 < 560) {
-//      Serial.println(" RED");
-//      leftTurn();
-//    } else {
-//    Serial.println(" ORANGE");
-//      LLTurn();
-//    }
-  } else { // both sides clear (white > 180)
-//    if (red < 565) {
-      Serial.println(" RED");
-      leftTurn();
-//    } else {
-//      Serial.println(" ORANGE");
-//      LLTurn(); 
-//    }
+  } 
+  else if (green > red - 50 && green > blue) { //GREEN
+    rightTurn();
+  } 
+  else { // RED
+    leftTurn();
+  }
+}
+
+void soundSense() {
+  int fL = SND.aRead2();
+  int fH = SND.aRead1();
+  delay(1000);
+
+  float r = (float) fL / ((float) fH + 0.01);
+  if (fL + fH < 100){
+    noAction = true;
+  }
+  else if (r > 100) { // {300Hz > 3kHz}
+    leftTurn();
+  } 
+  else if (r < 0.5) { // {3kHz > 300Hz}
+    rightTurn();
+  } 
+  else if (r > 0.5 && r < 100) { // {3kHz same as 300Hz}
+    uTurn();
   }
 }
