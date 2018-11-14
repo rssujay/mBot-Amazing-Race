@@ -2,6 +2,15 @@
 #define OPSPD 235 // Operating Speed
 #define LOSPD 165 // Low Speed
 #define TDURATION 290 // Standard time taken for 90 degree turn
+//notes for victory music:
+#define NOTE_FS3 185
+#define NOTE_G3  196
+#define NOTE_A3  220
+#define NOTE_B3  247
+#define NOTE_C4  262
+#define NOTE_CS4 277
+#define NOTE_D4  294
+#define NOTE_E4  330
 
 
 //Global variables
@@ -19,6 +28,16 @@ MePort SND(PORT_4); // SOUND
 MeRGBLed rgbled_7(7);  // COLOUR
 MeLightSensor lightsensor_6(6);
 double red, blue, green, white;
+
+//Victory music data:
+
+int melody[] = {NOTE_D4,NOTE_CS4,NOTE_B3,NOTE_FS3,NOTE_FS3,NOTE_FS3,NOTE_FS3,NOTE_FS3,NOTE_FS3,NOTE_B3,
+                NOTE_B3,NOTE_B3,NOTE_B3,NOTE_A3,NOTE_B3,NOTE_G3,NOTE_G3,NOTE_G3,NOTE_G3,NOTE_G3,
+                NOTE_B3,NOTE_B3,NOTE_B3,NOTE_B3,NOTE_B3,NOTE_CS4,NOTE_D4,NOTE_A3,NOTE_A3,NOTE_A3,
+                NOTE_A3,NOTE_A3,NOTE_A3,NOTE_D4,NOTE_D4,NOTE_D4,NOTE_D4,NOTE_E4,NOTE_E4,NOTE_CS4};
+
+int noteDurations[] = {2,2,4,4,8,8,8,8,8,8,8,8,4,8,4,3,8,8,8,8,8,8,8,8,4,8,4,3,8,8,8,8,8,8,8,8,4,8,4,3};
+
 
 //Function prototypes for those with default arguments
 void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
@@ -186,7 +205,7 @@ void colourAction() {
      uTurn();
   } 
   else if (red < 350 && green < 350 && blue < 350) { //BLACK
-      //play_music();
+      play_music();
       exit(0);
   } 
   else if (blue > red - 50 && blue > green) { //BLUE
@@ -217,5 +236,15 @@ void soundSense() {
   } 
   else if (r >= 0.5 && r <= 100) { // {3kHz same as 300Hz}
     uTurn();
+  }
+}
+
+void play_music() {
+  for (int thisNote = 0; thisNote <= 41; thisNote++) {
+    int noteDuration = 1100/noteDurations[thisNote];
+    tone(8, melody[thisNote],noteDuration);
+    int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+    noTone(8);
   }
 }
