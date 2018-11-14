@@ -222,7 +222,7 @@ void soundSense() {
   delay(1000);
 
   float r = (float) fL / ((float) fH + 0.01);
-  if (r > 50 && r < 5000){
+  if (r > 50 && r <= 5000){
     noAction = true;
   }
   else if (r > 5000) { // {300Hz > 3kHz}
@@ -231,7 +231,7 @@ void soundSense() {
   else if (r < 0.46) { // {3kHz > 300Hz}
     rightTurn();
   } 
-  else if (r >= 0.46 && r <= 100) { // {3kHz same as 300Hz}
+  else if (r >= 0.46 && r <= 50) { // {3kHz same as 300Hz}
     uTurn();
   }
 }
