@@ -1,7 +1,7 @@
 #include "MeMCore.h"
 #define OPSPD 235 // Operating Speed
 #define LOSPD 165 // Low Speed
-#define TDURATION 290 // Standard time taken for 90 degree turn
+#define TDURATION 270 // Standard time taken for 90 degree turn
 //notes for victory music:
 #define NOTE_FS3 185
 #define NOTE_G3  196
@@ -45,7 +45,7 @@ void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 
 void setup(){
   left = IR.aRead1()/51.0 , right = IR.aRead2()/51.0;
-  leftBound = max(left - 1,left * 0.925), rightBound = max(right - 1, right * 0.925); //CALIBRATE BOUNDS
+  leftBound = left - 1.0, rightBound = right - 1.0; //CALIBRATE BOUNDS
   pinMode(LIR, INPUT);
   pinMode(RIR, INPUT);
   //delay(300);
@@ -54,21 +54,16 @@ void setup(){
 }
 
 void loop(){
-  if(lineFinder.readSensors() != 3){
+  if(lineFinder.readSensors() != 3 && ultraSound() < 25){
     stopWheels();
     solveChallenge();
-  }
+  } 
   moveForward();
 }
 
 // Challenge Solver
 void solveChallenge(void){
-  //soundSense();
-  noAction = true;
-  if (noAction){
-    colourAction();
-    noAction = false;
-  } 
+  colourAction();
 }
 
 //General movement functions
@@ -102,11 +97,11 @@ void moveForward(void){
     rightWheel.run(LOSPD);
     b++;
   }
-  else if (a > 75){ //repay correction debt
+  else if (a > 125){ //repay correction debt
     leftWheel.run(-OPSPD);
     rightWheel.run(LOSPD);
   }
-  else if (b > 75){ //repay correction debt
+  else if (b > 125){ //repay correction debt
     leftWheel.run(-LOSPD);
     rightWheel.run(OPSPD);
   }
@@ -150,8 +145,8 @@ void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
 }
 
 void uTurn(void){
-  float left = IR.aRead1()/51.0, right = IR.aRead2()/51.0;
-  if (right > left){
+  float newleft = IR.aRead1()/51.0, newright = IR.aRead2()/51.0;
+  if (right - newright < left - newleft){
     leftWheel.run(-OPSPD);
     rightWheel.run(-OPSPD);
   }
@@ -159,7 +154,6 @@ void uTurn(void){
     leftWheel.run(OPSPD);
     rightWheel.run(OPSPD);
   }
-
   delay(TDURATION * 2);
   stopWheels();
 }
@@ -167,7 +161,7 @@ void uTurn(void){
 void LLTurn(void){
   leftTurn();
   long t = millis();
-  while(ultraSound() > 400 || millis()-t < 800){ //within 900 ms it will cover 1 tile distance
+  while(ultraSound() > 550 || millis()-t < 700){ //within 900 ms it will cover 1 tile distance
     stepForward(100);
   }
   leftTurn();
@@ -176,7 +170,7 @@ void LLTurn(void){
 void RRTurn(void){
   rightTurn();
   long t = millis();
-  while(ultraSound() > 400 || millis()-t < 800){
+  while(ultraSound() > 550 || millis()-t < 700){
     stepForward(100);
   }
   rightTurn();
@@ -205,8 +199,11 @@ void colourAction() {
      uTurn();
   } 
   else if (red < 350 && green < 350 && blue < 350) { //BLACK
-      play_music();
-      exit(0);
+      soundSense();
+      if (noAction == true){
+        play_music();
+        exit(0);
+      }
   } 
   else if (blue > red - 50 && blue > green) { //BLUE
      RRTurn();
@@ -225,26 +222,28 @@ void soundSense() {
   delay(1000);
 
   float r = (float) fL / ((float) fH + 0.01);
-  if (fL + fH < 150){
+  if (r > 50 && r < 5000){
     noAction = true;
   }
-  else if (r > 100) { // {300Hz > 3kHz}
+  else if (r > 5000) { // {300Hz > 3kHz}
     leftTurn();
   } 
-  else if (r < 0.5) { // {3kHz > 300Hz}
+  else if (r < 0.46) { // {3kHz > 300Hz}
     rightTurn();
   } 
-  else if (r >= 0.5 && r <= 100) { // {3kHz same as 300Hz}
+  else if (r >= 0.46 && r <= 100) { // {3kHz same as 300Hz}
     uTurn();
   }
 }
 
 void play_music() {
-  for (int thisNote = 0; thisNote <= 41; thisNote++) {
-    int noteDuration = 1100/noteDurations[thisNote];
-    tone(8, melody[thisNote],noteDuration);
-    int pauseBetweenNotes = noteDuration * 1.30;
-    delay(pauseBetweenNotes);
-    noTone(8);
+  while (true){
+    for (int thisNote = 0; thisNote <= 39; thisNote++) {
+      int noteDuration = 1100/noteDurations[thisNote];
+      tone(8, melody[thisNote],noteDuration);
+      int pauseBetweenNotes = noteDuration * 1.30;
+      delay(pauseBetweenNotes);
+      noTone(8);
+    }
   }
 }
