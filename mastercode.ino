@@ -12,7 +12,7 @@ MeDCMotor rightWheel(M2);
 MeLineFollower lineFinder(PORT_2);
 MePort IR(PORT_3);
 int8_t LIR, RIR, a = 0, b = 0, us = 12; // IR + ULTRASONIC
-float leftBound, rightBound; //IR WALL DETECTION
+float left, right, leftBound, rightBound; //IR WALL DETECTION
 
 MePort SND(PORT_4); // SOUND
 
@@ -25,7 +25,8 @@ void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 
 void setup(){
-  leftBound = IR.aRead1()/51.0 - 1.0, rightBound = IR.aRead2()/51.0 - 1.0; //CALIBRATE BOUNDS
+  left = IR.aRead1()/51.0 , right = IR.aRead2()/51.0;
+  leftBound = max(left - 1,left * 0.925), rightBound = max(right - 1, right * 0.925); //CALIBRATE BOUNDS
   pinMode(LIR, INPUT);
   pinMode(RIR, INPUT);
   //delay(300);
@@ -43,7 +44,8 @@ void loop(){
 
 // Challenge Solver
 void solveChallenge(void){
-  soundSense();
+  //soundSense();
+  noAction = true;
   if (noAction){
     colourAction();
     noAction = false;
@@ -81,11 +83,11 @@ void moveForward(void){
     rightWheel.run(LOSPD);
     b++;
   }
-  else if (a > 100){ //repay correction debt
+  else if (a > 75){ //repay correction debt
     leftWheel.run(-OPSPD);
     rightWheel.run(LOSPD);
   }
-  else if (b > 100){ //repay correction debt
+  else if (b > 75){ //repay correction debt
     leftWheel.run(-LOSPD);
     rightWheel.run(OPSPD);
   }
@@ -129,16 +131,24 @@ void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
 }
 
 void uTurn(void){
-  leftWheel.run(OPSPD);
-  rightWheel.run(OPSPD);
+  float left = IR.aRead1()/51.0, right = IR.aRead2()/51.0;
+  if (right > left){
+    leftWheel.run(-OPSPD);
+    rightWheel.run(-OPSPD);
+  }
+  else{
+    leftWheel.run(OPSPD);
+    rightWheel.run(OPSPD);
+  }
+
   delay(TDURATION * 2);
   stopWheels();
 }
 
 void LLTurn(void){
   leftTurn();
-  long time = millis();
-  while(ultraSound() > 400 || millis()-time < 800){ //within 900 ms it will cover 1 tile distance
+  long t = millis();
+  while(ultraSound() > 400 || millis()-t < 800){ //within 900 ms it will cover 1 tile distance
     stepForward(100);
   }
   leftTurn();
@@ -146,8 +156,8 @@ void LLTurn(void){
 
 void RRTurn(void){
   rightTurn();
-  long time = millis();
-  while(ultraSound() > 400 || millis()-time < 800){
+  long t = millis();
+  while(ultraSound() > 400 || millis()-t < 800){
     stepForward(100);
   }
   rightTurn();
@@ -172,7 +182,7 @@ void colourAction() {
   rgbled_7.show();
   delay(300);
   blue = lightsensor_6.read();
-  if (red > 500 && green > 500 && blue > 500) { // WHITE
+  if (red > 600 && green > 600 && blue > 600) { // WHITE
      uTurn();
   } 
   else if (red < 350 && green < 350 && blue < 350) { //BLACK
@@ -196,7 +206,7 @@ void soundSense() {
   delay(1000);
 
   float r = (float) fL / ((float) fH + 0.01);
-  if (fL + fH < 100){
+  if (fL + fH < 150){
     noAction = true;
   }
   else if (r > 100) { // {300Hz > 3kHz}
@@ -205,7 +215,7 @@ void soundSense() {
   else if (r < 0.5) { // {3kHz > 300Hz}
     rightTurn();
   } 
-  else if (r > 0.5 && r < 100) { // {3kHz same as 300Hz}
+  else if (r >= 0.5 && r <= 100) { // {3kHz same as 300Hz}
     uTurn();
   }
 }
