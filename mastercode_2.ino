@@ -229,7 +229,7 @@ void colourAction() {
   else if (green > red - 50 && green > blue) { //GREEN
     rightTurn();
   } 
-  else if (white < 550){ // RED
+  else if (white < 180){ // RED
     rgbled_7.setColor(0,255,0,0);
     rgbled_7.show();
 //    leftTurn();
