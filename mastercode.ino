@@ -20,7 +20,7 @@ MeDCMotor leftWheel(M1); // MOVEMENT
 MeDCMotor rightWheel(M2);
 MeLineFollower lineFinder(PORT_2);
 MePort IR(PORT_3);
-int8_t LIR, RIR, a = 0, b = 0, us = 12; // IR + ULTRASONIC
+int8_t a = 0, b = 0, us = 12; // IR + ULTRASONIC
 float left, right, leftBound, rightBound; //IR WALL DETECTION
 
 MePort SND(PORT_4); // SOUND
@@ -46,24 +46,17 @@ void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION);
 void setup(){
   left = IR.aRead1()/51.0 , right = IR.aRead2()/51.0;
   leftBound = left - 1.0, rightBound = right - 1.0; //CALIBRATE BOUNDS
-  pinMode(LIR, INPUT);
-  pinMode(RIR, INPUT);
   //delay(300);
   stepForward(50); //START MOVING
   lineFinder.readSensors(); //CALIBRATE SENSORS
 }
 
 void loop(){
-  if(lineFinder.readSensors() != 3 && ultraSound() < 25){
+  if(lineFinder.readSensors() < 3 && ultraSound() < 25){
     stopWheels();
-    solveChallenge();
+    colourAction();
   } 
   moveForward();
-}
-
-// Challenge Solver
-void solveChallenge(void){
-  colourAction();
 }
 
 //General movement functions
@@ -84,14 +77,14 @@ int16_t ultraSound(void){
 }
   
 void moveForward(void){
-  float left = IR.aRead1()/51.0, right = IR.aRead2()/51.0;
-  if (right < rightBound){ //correct towards left
+  float currLeft = IR.aRead1()/51.0, currRight = IR.aRead2()/51.0;
+  if (currRight < rightBound){ //correct towards left
     b = 0;
     leftWheel.run(-LOSPD);
     rightWheel.run(OPSPD);
     a++;
   }
-  else if (left < leftBound){ //correct towards right
+  else if (currLeft < leftBound){ //correct towards right
     a = 0;
     leftWheel.run(-OPSPD);
     rightWheel.run(LOSPD);
@@ -105,7 +98,7 @@ void moveForward(void){
     leftWheel.run(-LOSPD);
     rightWheel.run(OPSPD);
   }
-  else{    
+  else{ // move straight
     leftWheel.run(-OPSPD);
     rightWheel.run(OPSPD);
   }
@@ -145,8 +138,8 @@ void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
 }
 
 void uTurn(void){
-  float newleft = IR.aRead1()/51.0, newright = IR.aRead2()/51.0;
-  if (right - newright < left - newleft){
+  float currLeft = IR.aRead1()/51.0, currRight = IR.aRead2()/51.0;
+  if (right - currRight < left - currLeft){
     leftWheel.run(-OPSPD);
     rightWheel.run(-OPSPD);
   }
@@ -161,7 +154,7 @@ void uTurn(void){
 void LLTurn(void){
   leftTurn();
   long t = millis();
-  while(ultraSound() > 550 || millis()-t < 700){ //within 900 ms it will cover 1 tile distance
+  while(ultraSound() > 550 && millis()-t < 700){ //within 900 ms it will cover 1 tile distance
     stepForward(100);
   }
   leftTurn();
@@ -170,7 +163,7 @@ void LLTurn(void){
 void RRTurn(void){
   rightTurn();
   long t = millis();
-  while(ultraSound() > 550 || millis()-t < 700){
+  while(ultraSound() > 550 && millis()-t < 700){
     stepForward(100);
   }
   rightTurn();
@@ -200,7 +193,7 @@ void colourAction() {
   } 
   else if (red < 350 && green < 350 && blue < 350) { //BLACK
       soundSense();
-      if (noAction == true){
+      if (noAction){
         play_music();
         exit(0);
       }
@@ -217,21 +210,21 @@ void colourAction() {
 }
 
 void soundSense() {
-  int fL = SND.aRead2();
-  int fH = SND.aRead1();
-  delay(1000);
+  float fL = SND.aRead2();
+  float fH = SND.aRead1();
+  //delay(1000);
 
-  float r = (float) fL / ((float) fH + 0.01);
-  if (r > 50 && r <= 5000){
+  float ratio = fL / (fH + 0.01);
+  if (ratio > 50 && ratio <= 5000){
     noAction = true;
   }
-  else if (r > 5000) { // {300Hz > 3kHz}
+  else if (ratio > 5000) { // {300Hz > 3kHz}
     leftTurn();
   } 
-  else if (r < 0.46) { // {3kHz > 300Hz}
+  else if (ratio < 0.46) { // {3kHz > 300Hz}
     rightTurn();
   } 
-  else if (r >= 0.46 && r <= 50) { // {3kHz same as 300Hz}
+  else if (ratio >= 0.46 && ratio <= 50) { // {3kHz same as 300Hz}
     uTurn();
   }
 }
