@@ -67,13 +67,13 @@ void stopWheels(void){
 
 int16_t ultraSound(void){
   pinMode(us, OUTPUT);
-  digitalWrite(us, LOW);
+  digitalWrite(us, LOW); //Activating the sensor to produce 40 kHz bursts
   delayMicroseconds(2);
   digitalWrite(us, HIGH);
   delayMicroseconds(2);
   digitalWrite(us, LOW);
   pinMode(us, INPUT);
-  return pulseIn(us, HIGH);
+  return pulseIn(us, HIGH); //duration for 2d
 }
   
 void moveForward(void){
