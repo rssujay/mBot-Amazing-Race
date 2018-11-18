@@ -210,11 +210,11 @@ void colourAction() {
 }
 
 void soundSense() {
-  float fL = SND.aRead2();
-  float fH = SND.aRead1();
+  float lowFreq = SND.aRead2();
+  float highFreq = SND.aRead1();
   //delay(1000);
 
-  float ratio = fL / (fH + 0.01);
+  float ratio = lowFreq / (highFreq + 0.01);
   if (ratio > 50 && ratio <= 5000){
     noAction = true;
   }
