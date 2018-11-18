@@ -117,7 +117,7 @@ void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
   delay(duration);
   stopWheels();
   long dist = ultraSound();
-  while (dist > 2000 && dist < 4200){ //distance approx > 1 tile and approx < 2 tiles - ignored when mBot is straight
+  while (dist > 2000 && dist < 4200){ //distance approx > 1 tile and approx < 2 tiles
     leftWheel.run(-OPSPD + 50);
     rightWheel.run(-LOSPD + 50);
     dist = ultraSound();
@@ -138,8 +138,8 @@ void rightTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
 }
 
 void uTurn(void){
-  float currLeft = IR.aRead1()/51.0, currRight = IR.aRead2()/51.0;
-  if (right - currRight < left - currLeft){
+  float currLeft = IR.aRead1()/51.0, currRight = IR.aRead2()/51.0; //check current proximity to both side walls, if any
+  if (right - currRight < left - currLeft){ //if closer to left wall, make a rightside u-turn 
     leftWheel.run(-OPSPD);
     rightWheel.run(-OPSPD);
   }
