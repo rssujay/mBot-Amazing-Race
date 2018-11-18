@@ -224,7 +224,7 @@ void soundSense() {
   else if (ratio < 0.46) { // {3kHz > 300Hz}
     rightTurn();
   } 
-  else if (ratio >= 0.46 && ratio <= 50) { // {3kHz same as 300Hz}
+  else { // {3kHz same as 300Hz}
     uTurn();
   }
 }
