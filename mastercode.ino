@@ -1,7 +1,7 @@
 #include "MeMCore.h"
 #define OPSPD 235 // Operating Speed
 #define LOSPD 165 // Low Speed
-#define TDURATION 270 // Standard time taken for 90 degree turn
+#define TDURATION 270 // Standard time taken for 90-110 degree turn
 //notes for victory music:
 #define NOTE_FS3 185
 #define NOTE_G3  196
@@ -90,11 +90,11 @@ void moveForward(void){
     rightWheel.run(LOSPD);
     b++;
   }
-  else if (a > 125){ //repay correction debt
+  else if (a > 125){ //overcorrection; correct towards right
     leftWheel.run(-OPSPD);
     rightWheel.run(LOSPD);
   }
-  else if (b > 125){ //repay correction debt
+  else if (b > 125){ //overcorrection; correct towards left
     leftWheel.run(-LOSPD);
     rightWheel.run(OPSPD);
   }
@@ -104,8 +104,8 @@ void moveForward(void){
   }
 }
 
-void stepForward(uint16_t duration){
-  leftWheel.run(-LOSPD);
+void stepForward(uint16_t duration){ 
+  leftWheel.run(-LOSPD); //Runs at LOSPD in favour of stability
   rightWheel.run(LOSPD);
   delay(duration);
   stopWheels();
@@ -114,11 +114,11 @@ void stepForward(uint16_t duration){
 void leftTurn(int16_t turnSpeed = OPSPD, uint16_t duration = TDURATION){
   leftWheel.run(turnSpeed);
   rightWheel.run(turnSpeed);
-  delay(duration);
-  stopWheels();
+  delay(duration); //Experimentally guaranteed to turn > 90 degrees
+  stopWheels(); //To allow for accurate ultrasound measurement
   long dist = ultraSound();
   while (dist > 2000 && dist < 4200){ //distance approx > 1 tile and approx < 2 tiles
-    leftWheel.run(-OPSPD + 50);
+    leftWheel.run(-OPSPD + 50); //Experimentally determined mild turn
     rightWheel.run(-LOSPD + 50);
     dist = ultraSound();
   }
