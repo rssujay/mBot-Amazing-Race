@@ -1,3 +1,19 @@
+/* The code below may not compile by default on your machine. This 
+ *  is because we have changed the MeMCore.h header file in our compile environment.
+ *  
+ *  Changes made to MeMCore.h: Commenting out of 
+ *  #include "MeInfraredReceiver.h"
+ *  #include "MeIR.h"
+ *  Both of them were not relevant to our program.
+ *  
+ *  Reason: These libraries had variable name 
+ *  clashes with "MeBuzzer.h" from which the tone() function is used in our code.
+ *  
+ *  Please do not share the URL indiscriminately!
+ *  - SECTION C GROUP 6
+ */
+ 
+
 #include "MeMCore.h"
 #define OPSPD 235 // Operating Speed
 #define LOSPD 165 // Low Speed
