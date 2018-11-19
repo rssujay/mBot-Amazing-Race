@@ -188,6 +188,13 @@ void colourAction() {
   rgbled_7.show();
   delay(300);
   blue = lightsensor_6.read();
+  
+  // scan white
+  rgbled_7.setColor(0,0,0,0);
+  rgbled_7.show();
+  delay(300);
+  white = lightsensor_6.read();
+  
   if (red > 600 && green > 600 && blue > 600) { // WHITE
      uTurn();
   } 
@@ -204,8 +211,15 @@ void colourAction() {
   else if (green > red - 50 && green > blue) { //GREEN
     rightTurn();
   } 
-  else { // RED
+  else if (white < 180){ // RED
+    rgbled_7.setColor(0,255,0,0);
+    rgbled_7.show();
     leftTurn();
+  }
+  else { // ORANGE
+    rgbled_7.setColor(0,255,255,0);
+    rgbled_7.show();
+    LLTurn();
   }
 }
 
