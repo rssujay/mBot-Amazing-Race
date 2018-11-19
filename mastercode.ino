@@ -20,7 +20,7 @@ MeDCMotor leftWheel(M1); // MOVEMENT
 MeDCMotor rightWheel(M2);
 MeLineFollower lineFinder(PORT_2);
 MePort IR(PORT_3);
-int8_t a = 0, b = 0, us = 12; // IR + ULTRASONIC
+int8_t a = 0, b = 0, us = 12; // IR + ULTRASOUND
 float left, right, leftBound, rightBound; //IR WALL DETECTION
 
 MePort SND(PORT_4); // SOUND
