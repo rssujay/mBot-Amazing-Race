@@ -212,13 +212,9 @@ void colourAction() {
     rightTurn();
   } 
   else if (white < 180){ // RED
-    rgbled_7.setColor(0,255,0,0);
-    rgbled_7.show();
     leftTurn();
   }
   else { // ORANGE
-    rgbled_7.setColor(0,255,255,0);
-    rgbled_7.show();
     LLTurn();
   }
 }
