@@ -1,6 +1,8 @@
 # CG1111
 
-(Software) requirements of mBot:
+![Completed mBot](completed_mBot.PNG)
+
+Requirements to be met by the mBot:
 
 1) The mBot must be able to move as required.
 - using software-controlled DC motors
@@ -22,7 +24,7 @@
   - 5 + 1 cases (all moves + black colour for end)
 
   3ii) Sound-based challenge
-  - using sound detectors (made by us)
+  - using sound detectors (built by us)
   - 3 cases (only basic moves)
 
 4) Accurately identify the end of maze
