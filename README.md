@@ -1,5 +1,3 @@
-# CG1111
-
 ![Completed mBot](completed_mBot.PNG)
 
 Requirements to be met by the mBot:
